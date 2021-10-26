@@ -8,9 +8,9 @@ set -e
 export OMP_NUM_THREADS=2
 export MAGNUM_LOG=quiet
 
-NO_SLEEP="TASK_CONFIG.SIMULATOR.AUTO_SLEEP=False"
-NO_CONCUR="TASK_CONFIG.SIMULATOR.CONCUR_RENDER=False"
-NO_OBJS="TASK_CONFIG.SIMULATOR.LOAD_ART_OBJS=False,TASK_CONFIG.SIMULATOR.LOAD_OBJS=False"
+NO_SLEEP=("SIMULATOR.AUTO_SLEEP" False)
+NO_CONCUR=("SIMULATOR.CONCUR_RENDER" False)
+NO_OBJS=("SIMULATOR.LOAD_ART_OBJS" False "SIMULATOR.LOAD_OBJS" False)
 
 #number of processes
 for j in 1 16
@@ -22,15 +22,12 @@ do
     python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "all_$i"
 
     # # Ours (-Concur Render)
-    python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "noconcur_$i" \
-        opts ${NO_CONCUR}
+    python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "noconcur_$i" "${NO_CONCUR[*]}"
 
     # # Ours (-Auto sleep)
-    python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "nosleep_$i" \
-        opts ${NO_SLEEP}
+    python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "nosleep_$i" "${NO_SLEEP[*]}"
 
     # # Ours (no rigid or articulated objects)
-    python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "noobjs_$i" \
-        opts ${NO_OBJS}
+    python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "noobjs_$i" "${NO_OBJS[*]}"
   done
 done
