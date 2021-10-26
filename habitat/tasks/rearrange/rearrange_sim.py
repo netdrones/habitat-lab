@@ -11,6 +11,7 @@ import magnum as mn
 import numpy as np
 
 from habitat.core.registry import registry
+from habitat.datasets.rearrange.sim_utilities import check_contacts
 from habitat.sims.habitat_simulator.habitat_simulator import HabitatSim
 from habitat.tasks.rearrange.rearrange_grasp_manager import (
     RearrangeGraspManager,
@@ -61,6 +62,7 @@ class RearrangeSim(HabitatSim):
         self.robot = robot_cls(self.habitat_config.ROBOT_URDF, self)
 
         self.ik_helper = None
+        self.robot_updates = 0
 
         # Disables arm control. Useful if you are hiding the arm to perform
         # some scene sensing.
@@ -390,49 +392,69 @@ class RearrangeSim(HabitatSim):
         self.viz_ids = defaultdict(lambda: None)
         self.grasp_mgr.update()
 
+        if self.robot_updates == 0:
+            print(self.robot_updates)
+            if self.robot is not None:
+                self.robot.update()
+                self.robot_updates += 1
+
         if self._concur_render:
-            self._prev_sim_obs = self.start_async_render()
-
-            if self.habitat_config.get("STEP_PHYSICS", True):
-                for _ in range(self.ac_freq_ratio):
-                    self.internal_step(-1)
-
+            self.start_async_render()
+            self.step_physics(self.ac_freq_ratio * 0.008)
             self._prev_sim_obs = self.get_sensor_observations_async_finish()
-            obs = self._sensor_suite.get_observations(self._prev_sim_obs)
+            # print(obs.keys())
+            # self._prev_sim_obs = self.start_async_render()
+
+            # if self.habitat_config.get("STEP_PHYSICS", True):
+            #     for _ in range(self.ac_freq_ratio):
+            #         self.internal_step(-1)
+
+            # self._prev_sim_obs = self.get_sensor_observations_async_finish()
+            # obs = self._sensor_suite.get_observations(self._prev_sim_obs)
         else:
-            if self.habitat_config.get("STEP_PHYSICS", True):
-                for _ in range(self.ac_freq_ratio):
-                    self.internal_step(-1)
+            # if self.habitat_config.get("STEP_PHYSICS", True):
+            #     for _ in range(self.ac_freq_ratio):
+            #         self.internal_step(-1)
+            self.step_physics(self.ac_freq_ratio * 0.008)
 
             self._prev_sim_obs = self.get_sensor_observations()
-            obs = self._sensor_suite.get_observations(self._prev_sim_obs)
+            # obs = self._sensor_suite.get_observations(self._prev_sim_obs)
 
         # TODO: Make debug cameras more flexible.
-        if "robot_third_rgb" in obs:
-            self.is_render_obs = True
-            self._try_acquire_context()
-            for k, pos in add_back_viz_objs.items():
-                self.viz_ids[k] = self.visualize_position(pos)
+        # if "robot_third_rgb" in obs:
+        #     self.is_render_obs = True
+        #     self._try_acquire_context()
+        #     for k, pos in add_back_viz_objs.items():
+        #         self.viz_ids[k] = self.visualize_position(pos)
 
-            # Also render debug information
-            if self.habitat_config.get("RENDER_TARGS", True):
-                self._create_obj_viz(self.ep_info)
+        #     # Also render debug information
+        #     if self.habitat_config.get("RENDER_TARGS", True):
+        #         self._create_obj_viz(self.ep_info)
 
-            # Always draw the target
-            for obj_handle, _ in self.ep_info["targets"].items():
-                self.set_object_bb_draw(
-                    True, rom.get_object_by_handle(obj_handle).object_id
-                )
+        #     # Always draw the target
+        #     for obj_handle, _ in self.ep_info["targets"].items():
+        #         self.set_object_bb_draw(
+        #             True, rom.get_object_by_handle(obj_handle).object_id
+        #         )
 
-            debug_obs = self.get_sensor_observations()
-            obs["robot_third_rgb"] = debug_obs["robot_third_rgb"][:, :, :3]
+        #     debug_obs = self.get_sensor_observations()
+        #     obs["robot_third_rgb"] = debug_obs["robot_third_rgb"][:, :, :3]
 
         if self.habitat_config.HABITAT_SIM_V0.get(
             "ENABLE_GFX_REPLAY_SAVE", False
         ):
             self.gfx_replay_manager.save_keyframe()
 
-        return obs
+        # debugging
+        # print("--------------------------")
+        # print("debugging:")
+        # print("--------------------------")
+        # check_contacts(self)
+        # for handle,ro in rom.get_objects_by_handle_substring().items():
+        #     if ro.awake:
+        #         print(f"    {handle} is awake")
+
+        return self._prev_sim_obs
 
     def visualize_position(self, position, viz_id=None, r=0.05):
         """Adds the sphere object to the specified position for visualization purpose."""

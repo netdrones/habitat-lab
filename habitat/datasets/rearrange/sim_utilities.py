@@ -755,3 +755,79 @@ def cull_string_list_by_substrings(
                     culled_list.append(string)
                     break
     return culled_list
+
+
+def get_contact_pairs(contact_points, link_resolution=True):
+    """
+    Compute a dictionary keyed by contact pair tuples containing max contact distance between pairs.
+    If link_resolution is true, also include links in the key tuple (a, b, l_a, l_b)
+    """
+    contact_pairs = {}
+    for cp in contact_points:
+        pair = (
+            (cp.object_id_a, cp.object_id_b)
+            if not link_resolution
+            else (cp.object_id_a, cp.object_id_b, cp.link_id_a, cp.link_id_b)
+        )
+        if pair not in contact_pairs:
+            contact_pairs[pair] = cp.contact_distance
+        else:
+            contact_pairs[pair] = max(contact_pairs[pair], cp.contact_distance)
+    return contact_pairs
+
+
+def get_rigid_component_name(sim, object_id, link_id):
+    """
+    Computes a descriptive name for the rigid component identified by the passed object_id and link_id from a ContactPointData.
+    example: 'ao--body_name--link_name' or 'ro--body_name'
+    """
+    # handle the stage
+    if object_id == -1:
+        return "stage"
+    # check rigid object first
+    rom = sim.get_rigid_object_manager()
+    if rom.get_library_has_id(object_id):
+        ro = rom.get_object_by_id(object_id)
+        short_handle = ro.handle.split("/")[-1]
+        return f"ro--{short_handle}"
+    # check articulated object
+    aom = sim.get_articulated_object_manager()
+    if aom.get_library_has_id(object_id):
+        ao = aom.get_object_by_id(object_id)
+        short_handle = ao.handle.split("/")[-1]
+        link_name = ao.get_link_name(link_id)
+        return f"ao--{short_handle}--{link_name}"
+    # not a RO or AO, so bad object_id
+    raise ValueError("object_id is not valid")
+
+
+def check_contacts(sim: habitat_sim.Simulator) -> List[Any]:
+    """
+    Check for contacts between objects in the scene and return the active contact pairs.
+    """
+    print("-------------- check contacts -------------")
+    # ids_to_names = sutils.get_all_object_ids(self.sim)
+    # aom = self.sim.get_articulated_object_manager()
+    # sim.perform_discrete_collision_detection()
+    cps = sim.get_physics_contact_points()
+    active_contacts = [x for x in cps if x.is_active]
+    # inactive_contacts = [x for x in cps if not x.is_active]
+
+    active_contact_pairs = get_contact_pairs(active_contacts)
+    # inactive_contact_pairs = get_contact_pairs(inactive_contacts)
+
+    print("Active contact pairs:")
+    for contact_pair, max_dist in active_contact_pairs.items():
+        print(
+            f"    ({get_rigid_component_name(sim, contact_pair[0], contact_pair[2])} vs {get_rigid_component_name(sim, contact_pair[1], contact_pair[3])}): {max_dist}"
+        )
+        print(f"        : {contact_pair}: {max_dist}")
+
+    # print("Active contact points:")
+    # for cp in active_contacts:
+    #     print(f"    {cp.contact_distance} ({cp.object_id_a} vs {cp.object_id_b})")
+    # print("Inactive contact points:")
+    # for cp in inactive_contacts:
+    #     print(f"    {cp.contact_distance} ({cp.object_id_a} vs {cp.object_id_b})")
+    print("-------------- done check contacts -------------")
+    return active_contact_pairs
