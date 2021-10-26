@@ -23,14 +23,14 @@ do
 
     # # Ours (-Concur Render)
     python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "noconcur_$i" \
-        --override ${NO_CONCUR}
+        opts ${NO_CONCUR}
 
     # # Ours (-Auto sleep)
     python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "nosleep_$i" \
-        --override ${NO_SLEEP}
+        opts ${NO_SLEEP}
 
     # # Ours (no rigid or articulated objects)
     python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps "$NUM_STEPS" --n-procs "$j" --out-name "noobjs_$i" \
-        --override ${NO_OBJS}
+        opts ${NO_OBJS}
   done
 done
