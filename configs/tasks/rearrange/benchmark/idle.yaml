@@ -34,7 +34,7 @@ SIMULATOR:
     # Benchmark relevant settings
     ############################
     CONCUR_RENDER: True
-    AUTO_SLEEP: True
+    AUTO_SLEEP: False
     STEP_PHYSICS: True
     ############################
 
