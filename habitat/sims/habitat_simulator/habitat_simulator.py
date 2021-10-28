@@ -284,6 +284,8 @@ class HabitatSim(habitat_sim.Simulator, Simulator):
         self, _sensor_suite: SensorSuite
     ) -> habitat_sim.Configuration:
         sim_config = habitat_sim.SimulatorConfiguration()
+        # necessary for improved perf w/ async rendering
+        sim_config.leave_context_with_background_renderer = True
         # Check if Habitat-Sim is post Scene Config Update
         if not hasattr(sim_config, "scene_id"):
             raise RuntimeError(
