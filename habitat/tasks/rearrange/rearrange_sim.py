@@ -392,11 +392,11 @@ class RearrangeSim(HabitatSim):
         self.viz_ids = defaultdict(lambda: None)
         self.grasp_mgr.update()
 
-        if self.robot_updates == 0:
-            print(self.robot_updates)
-            if self.robot is not None:
-                self.robot.update()
-                self.robot_updates += 1
+        # if self.robot_updates == 0:
+        #     print(self.robot_updates)
+        if self.robot is not None:
+            self.robot.update()
+            self.robot_updates += 1
 
         if self._concur_render:
             self.start_async_render()
