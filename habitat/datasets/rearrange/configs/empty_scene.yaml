@@ -1,0 +1,58 @@
+---
+dataset_path: "data/versioned_data/replica_cad_baked_lighting_1.1/replicaCAD_baked.scene_dataset_config.json"
+additional_object_paths:
+  - "data/objects/ycb/"
+scene_sets:
+  -
+    name: "empty"
+    included_substrings:
+      - "frl_apartment_stage_pvizplan_empty"
+    excluded_substrings: []
+
+object_sets:
+  -
+    name: "kitchen"
+    included_substrings:
+      - "002_master_chef_can"
+      - "003_cracker_box"
+      - "004_sugar_box"
+      - "005_tomato_soup_can"
+      - "007_tuna_fish_can"
+      - "008_pudding_box"
+      - "009_gelatin_box"
+      - "010_potted_meat_can"
+      - "024_bowl"
+    excluded_substrings: []
+
+receptacle_sets:
+  -
+    name: "table"
+    included_object_substrings:
+      - "frl_apartment_table_01"
+    excluded_object_substrings: []
+    included_receptacle_substrings:
+      - ""
+    excluded_receptacle_substrings: []
+    comment: "The empty substrings act like wildcards, selecting all receptacles for all objects."
+  -
+    name: "fridge"
+    included_object_substrings:
+      - "fridge"
+    excluded_object_substrings: []
+    included_receptacle_substrings:
+      - ""
+    excluded_receptacle_substrings: []
+  -
+    name: "counter"
+    included_object_substrings:
+      - "kitchen_counter"
+    excluded_object_substrings: []
+    included_receptacle_substrings:
+      - ""
+    excluded_receptacle_substrings: []
+
+scene_sampler:
+  type: "subset"
+  params:
+    scene_sets: ["empty"]
+  comment: "Samples from ReplicaCAD 105 variations with static furniture."
