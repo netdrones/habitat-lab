@@ -390,17 +390,20 @@ class RearrangeSim(HabitatSim):
             add_back_viz_objs[name] = before_pos
         self.viz_obj_ids = []
         self.viz_ids = defaultdict(lambda: None)
-        self.grasp_mgr.update()
 
         # if self.robot_updates == 0:
         #     print(self.robot_updates)
-        if self.robot is not None:
+        if self.robot is not None and self.habitat_config.get(
+            "UPDATE_ROBOT", True
+        ):
+            self.grasp_mgr.update()
             self.robot.update()
             self.robot_updates += 1
 
         if self._concur_render:
             self.start_async_render()
-            self.step_physics(self.ac_freq_ratio * 0.008)
+            if self.habitat_config.get("STEP_PHYSICS", True):
+                self.step_physics(self.ac_freq_ratio * 0.008)
             self._prev_sim_obs = self.get_sensor_observations_async_finish()
             # print(obs.keys())
             # self._prev_sim_obs = self.start_async_render()
@@ -415,7 +418,8 @@ class RearrangeSim(HabitatSim):
             # if self.habitat_config.get("STEP_PHYSICS", True):
             #     for _ in range(self.ac_freq_ratio):
             #         self.internal_step(-1)
-            self.step_physics(self.ac_freq_ratio * 0.008)
+            if self.habitat_config.get("STEP_PHYSICS", True):
+                self.step_physics(self.ac_freq_ratio * 0.008)
 
             self._prev_sim_obs = self.get_sensor_observations()
             # obs = self._sensor_suite.get_observations(self._prev_sim_obs)
