@@ -59,12 +59,15 @@ def plot(name_map, savename, set_title, base_name):
 
 
 # plot rearrange benchmark numbers
-for i in [1, 16]:
+for i in [1]:
     plot(
         {
             "idle_all": "[Idle]",
             "idle_noconcur": "[Idle No Concurrent Rendering]",
             "idle_nosleep": "[Idle No Auto-sleep]",
+            "idle_nophys": "[Idle No Physics Step]",
+            "idle_norobupdate": "[Idle No Robot Update]",
+            "idle_render": "[Idle Render Only]",
         },
         "opts_%i" % i,
         "ReplicaCAD: 200 Steps %i Processes" % i,
