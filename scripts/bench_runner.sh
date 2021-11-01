@@ -9,6 +9,9 @@ export OMP_NUM_THREADS=2
 export MAGNUM_LOG=quiet
 export HABITAT_SIM_LOG=quiet
 
+
+#py-spy record --native --idle --function --subprocesses --rate 50 --output pyspy_profile.speedscope --format speedscope -- /private/home/alexclegg/.conda/envs/hab2_bench/bin/python scripts/hab2_benchmark.py --cfg configs/tasks/rearrange/benchmark/idle.yaml --n-steps 200 --n-procs 1 --out-name "render_psypy" "SIMULATOR.STEP_PHYSICS" False "SIMULATOR.UPDATE_ROBOT" False
+
 NO_SLEEP=("SIMULATOR.AUTO_SLEEP" False)
 NO_CONCUR=("SIMULATOR.CONCUR_RENDER" False)
 NO_PHYSICS=("SIMULATOR.STEP_PHYSICS" False)
