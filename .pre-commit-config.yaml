@@ -5,7 +5,7 @@ default_language_version:
 
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
     -   id: trailing-whitespace
     -   id: check-added-large-files
@@ -23,7 +23,7 @@ repos:
         args: ['--fix=lf']
 
 -   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.1.0
+    rev: v2.3.0
     hooks:
     -   id: pretty-format-ini
         args: [--autofix]
@@ -36,15 +36,15 @@ repos:
     -   id: python-check-blanket-noqa
     # TODO: Add blanket type ignore check as well
 
--   repo: https://github.com/timothycrosley/isort
-    rev: 5.8.0
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.10.1
     hooks:
     -   id: isort
         exclude: docs/
         additional_dependencies: [toml]
 
--   repo: https://github.com/ambv/black
-    rev: 21.6b0
+-   repo: https://github.com/psf/black
+    rev: 22.1.0
     hooks:
     - id: black
       exclude: ^examples/tutorials/(nb_python|colabs)
@@ -56,8 +56,8 @@ repos:
         args: ['--expand-star-imports', '--ignore-init-module-imports', '--in-place']
         exclude: docs/
 
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+-   repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
     hooks:
     -   id: flake8
         exclude: docs/
@@ -69,7 +69,7 @@ repos:
         - flake8-simplify==0.14.1
 
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.902
+    rev: v0.941
     hooks:
     -   id: mypy
         pass_filenames: false
@@ -77,13 +77,13 @@ repos:
         - attrs
 
 -   repo: https://github.com/kynan/nbstripout
-    rev: 0.4.0
+    rev: 0.5.0
     hooks:
     -   id: nbstripout
         files: ".ipynb"
 
 -   repo: https://github.com/mwouts/jupytext
-    rev: v1.11.3
+    rev: v1.13.7
     hooks:
     -   id: jupytext
         files: '^examples/tutorials/(colabs|nb_python)/(.*\.py|.*\.ipynb)$'
@@ -94,12 +94,12 @@ repos:
             - isort
 
 -   repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.7.2.1
+    rev: v0.8.0.4
     hooks:
     -   id: shellcheck
         exclude: ^habitat_baselines/slambased/
 
 -   repo: https://github.com/AleksaC/circleci-cli-py
-    rev: v0.1.15338
+    rev: v0.1.16947
     hooks:
     -   id: circle-ci-validator
